@@ -12,8 +12,7 @@ function resultingBoard()
 	echo "----------"
 	echo "${board[6]} | ${board[7]} | ${board[6]}"
 }
-#CALL THE FUNCTION
-resultingBoard
+function assiningLetter()
 {
 	#GENERATING RANDOM VALUE TO ASSIGN PLAYER O OR X
 	randomNumber=$((RANDOM%2))
@@ -26,3 +25,21 @@ resultingBoard
 			computer="X";;
 esac
 }
+function checkToss()
+{
+	#GENERATING RANDOM VALUE 1 FOR PALYER 2 FOR COMPUTER
+	toss=$((RANDOM%2))
+	case $toss in
+		0)
+			printf "Player play first\n"
+			printf "Player assinged: $player\nComputer assinged: $computer\n"
+			;;
+		1)
+			printf "Computer play first\n"
+			printf "Computer assinged: $computer\nPlayer assinged: $player\n"
+			;;
+	esac
+}
+assiningLetter
+displayBoard
+checkToss
