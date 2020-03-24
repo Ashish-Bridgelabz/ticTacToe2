@@ -14,3 +14,15 @@ function resultingBoard()
 }
 #CALL THE FUNCTION
 resultingBoard
+{
+	#GENERATING RANDOM VALUE TO ASSIGN PLAYER O OR X
+	randomNumber=$((RANDOM%2))
+	case $randomNumber in
+		0)
+			player="X"
+			computer="O";;
+		1)
+			player="O"
+			computer="X";;
+esac
+}
