@@ -51,7 +51,7 @@ function validCellNumber()
 #LOGIC FOR TO ASSIGN FIRST CHANCE
 function checkToss()
 {
-	#GENERATING RANDOM VALUE 1 FOR PALYER 2 FOR COMPUTER
+	#GENERATING RANDOM VALUE 0 FOR PALYER 1 FOR COMPUTER
 	toss=$((RANDOM%2))
 	case $toss in
 		0)
@@ -108,6 +108,88 @@ function gameOver()
 	fi
 	fi
 	echo $result
+}
+#COMPUTER FILL AUTOMATIC TO WIN
+function computerFillAutomatic()
+{
+	local rowIndex=0
+	local columnIndex=0
+	#CHECKING FOR ROWS
+	while(($rowIndex<8))
+	do
+		if [[ ${board[$rowIndex]} == $computer && ${board[$(($rowIndex+1))]} == $computer && ${board[$(($rowIndex+2))]} == $EMPTY ]]
+		then
+			board[$(($rowIndex+2))]=$computer
+			compPlay=1
+			return
+		elif [[ ${board[$rowIndex]} == $computer && ${board[$(($rowIndex+2))]} == $computer && ${board[$(($rowIndex+1))]} == $EMPTY ]]
+		then
+			board[$(($rowIndex+1))]=$computer
+			compPlay=1
+			return
+		elif [[ ${board[$(($rowIndex+2))]} == $computer && ${board[$(($rowIndex+1))]} == $computer && ${board[$rowIndex]} == $EMPTY ]]
+		then
+			board[$rowIndex]=$computer
+			compPlay=1
+			return
+		fi
+		rowIndex=$(($rowIndex+1))
+	done
+	#CHECKING FOR COLUMNS
+	while(($columnIndex<8))
+	do
+		if [[ ${board[$columnIndex]} == $computer && ${board[$(($columnIndex+3))]} == $computer && ${board[$(($columnIndex+6))]} == $EMPTY ]]
+		then
+			board[$(($columnIndex+6))]=$computer
+			compPlay=1
+			return
+		elif [[ ${board[$columnIndex]} == $computer && ${board[$(($columnIndex+6))]} == $computer && ${board[$(($columnIndex+3))]} == $EMPTY ]]
+		then
+			board[$(($columnIndex+3))]=$computer
+			compPlay=1
+		return
+		elif [[ ${board[$(($columnIndex+3))]} == $computer && ${board[$(($columnIndex+6))]} == $computer && ${board[$columnIndex]} == $EMPTY ]]
+		then
+			board[$columnIndex]=$computer
+			compPlay=1
+			return
+		fi
+		columnIndex=$(($columnIndex+1))
+	done
+	#CHECKING FOR  \  DIAGONAL
+	if [[ ${board[0]} == $computer && ${board[4]} == $computer && ${board[8]} == $EMPTY ]]
+	then
+		board[8]=$computer
+		compPlay=1
+		return
+	elif [[ ${board[0]} == $computer && ${board[8]} == $computer && ${board[4]} == $EMPTY ]]
+	then
+		board[4]=$computer
+		compPlay=1
+		return
+		elif [[ ${board[8]} == $computer && ${board[4]} == $computer && ${board[0]} == $EMPTY ]]
+	then
+		board[0]=$computer
+		compPlay=1
+		return
+	fi
+	#CHECKING FOR  /  DIAGONAL
+	if [[ ${board[2]} == $computer && ${board[4]} == $computer && ${board[6]} == $EMPTY ]]
+	then
+		board[6]=$computer
+		compPlay=1
+		return
+	elif [[ ${board[2]} == $computer && ${board[6]} == $computer && ${board[4]} == $EMPTY ]]
+	then
+		board[4]=$computer
+		compPlay=1
+		return
+	elif [[ ${board[6]} == $computer && ${board[4]} == $computer && ${board[2]} == $EMPTY ]]
+	then
+		board[2]=$computer
+		compPlay=1
+		return
+	fi
 }
 #LOGIC FOR COMPUTER TURN
 function computerTurn()
