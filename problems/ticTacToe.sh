@@ -16,9 +16,9 @@ function displayBoard()
 #ASSINING LETTER TO PLAYER AND COMPUTER
 function assiningLetter()
 {
-	#GENERATING RANDOM VALUE TO ASSIGN O OR X
-	randomNumber=$((RANDOM%2))
-	case $randomNumber in
+	#GENERATING RANDOM VALUE TO ASSIGN PLAYER O OR X
+	random=$((RANDOM%2))
+	case $random in
 		0)
 			player="X"
 			computer="O";;
@@ -28,97 +28,127 @@ function assiningLetter()
 	esac
 	checkToss
 }
-#LOGIC FOR VALID CELL
+#LOGIC FOR CHOOSE VALID CELL
 function validCellNumber()
 {
-   echo "Enter the valid number from 0 to 8 and choose position" 
-   read data
-   if (($data>=0 && $data<=8))
-   then
-      if [[ "${board[data]}"!=X || "${board[data]}"!=O ]]
-      then
-         board[$data]="$player"
-      else
-         echo "Enter valid input\n"
-			validCellNumber
-      fi
-   fi
-
-displayBoard
+	echo "Enter index 0 to 8 to choose position in board"
+	read data
+	if(($data>=0 && $data<=8))
+	then
+			if [[ "${board[data]}"!="X" && "${board[data]}"!="O" ]]
+			then
+			#USING CLEAR TO CLEAN PREVIOUS PLAYED
+			clear
+			echo "Player turn\n"
+			board[$data]="$player"
+			displayBoard
+			else
+			echo "Enter valid input"
+			validCellNumber $player
+			fi
+	fi
 }
 #LOGIC FOR TO ASSIGN FIRST CHANCE
 function checkToss()
 {
-	#GENERATING RANDOM VALUE 0 FOR PALYER 1 FOR COMPUTER
+	#GENERATING RANDOM VALUE 1 FOR PALYER 2 FOR COMPUTER
 	toss=$((RANDOM%2))
 	case $toss in
 		0)
-			echo "Player play first\n"
-			echo "Player assinged: $player\nComputer assinged: $computer";;
+			echo "Player play first"
+			echo "Player assinged: $player and Computer assinged: $computer"
+			displayBoard;;
 		1)
-			echo "Computer play first\n"
-			echo "Computer assinged: $computer\nPlayer assinged: $player";;
+			echo "Computer play first"
+			echo "Computer assinged: $computer and Player assinged: $player"
+			tossComputer="computer";;
 	esac
-
 }
-assiningLetter
-#LOGIC FOR WIN DROW AND NEXT CHANCE
+#LOGIC FOR WIN  DRAW AND NEXT CHANCE
 function gameOver()
 {
 	if [[ "${board[0]} ${board[1]} ${board[2]}" = "X X X" ||  "${board[0]} ${board[1]} ${board[2]}" = "O O O" ]]
 	then
-		echo result="Win" 
-	elif [[ "${board[3]} ${board[4]} ${board[5]}"="X X X"||"${board[3]} ${board[4]} ${board[5]}"="O O O " ]]
+		result="Win"
+	elif [[ "${board[3]} ${board[4]} ${board[5]}" = "X X X" ||  "${board[3]} ${board[4]} ${board[5]}" = "O O O" ]]
 	then
 		result="Win"
-	elif [[ "${board[6]} ${board[7]} ${board[8]}"="X X X"||"${board[6]} ${board[7]} ${board[8]}"="O O O " ]]
+	elif [[ "${board[6]} ${board[7]} ${board[8]}" = "X X X" ||  "${board[6]} ${board[7]} ${board[8]}" = "O O O" ]]
 	then
 		result="Win"
-	elif [[ "${board[0]} ${board[3]} ${board[6]}"="X X X"||"${board[0]} ${board[3]} ${board[6]}"="O O O " ]]
-	then		result="Win"
-	elif [[ "${board[1]} ${board[4]} ${board[7]}"="X X X"||"${board[1]} ${board[4]} ${board[7]}"="O O O " ]]
+	elif [[ "${board[0]} ${board[3]} ${board[6]}" = "X X X" ||  "${board[0]} ${board[3]} ${board[6]}" = "O O O" ]]
 	then
 		result="Win"
-	elif [[ "${board[2]} ${board[5]} ${board[8]}"="X X X"||"${board[2]} ${board[5]} ${board[8]}"="O O O " ]]
+	elif [[ "${board[1]} ${board[4]} ${board[7]}" = "X X X" ||  "${board[1]} ${board[4]} ${board[7]}" = "O O O" ]]
 	then
 		result="Win"
-	elif [[ "${board[0]} ${board[4]} ${board[8]}"="X X X"||"${board[0]} ${board[4]} ${board[8]}"="O O O " ]]
+	elif [[ "${board[2]} ${board[5]} ${board[8]}" = "X X X" ||  "${board[2]} ${board[5]} ${board[8]}" = "O O O" ]]
 	then
 		result="Win"
-	elif [[ "${board[6]} ${board[4]} ${board[2]}"="X X X"||"${board[6]} ${board[4]} ${board[2]}"="O O O " ]]
- 	then
+	elif [[ "${board[0]} ${board[4]} ${board[8]}" = "X X X" ||  "${board[0]} ${board[4]} ${board[8]}" = "O O O" ]]
+	then
+		result="Win"
+	elif [[ "${board[6]} ${board[4]} ${board[2]}" = "X X X" ||  "${board[6]} ${board[4]} ${board[2]}" = "O O O" ]]
+	then
 		result="Win"
 	else
 		temp=0
-		for((index=0; index<${#board[@]}; index++))
+		for(( index=0; index<${#board[@]}; index++ ))
 		do
-			if [[ "${board[$index]}"!=X || "${board[$index]}"!=O ]]
+			if [[ ${board[$index]} != "X" && ${board[$index]} != "O" ]]
 			then
 				temp=1
 			fi
 		done
-			if(($temp==1))
-			then
-				result="Change"
-			else
-				result="Draw"
-			fi
+	if(( $temp==1 ))
+	then
+		result="Chance"
+	else
+		result="Draw"
 	fi
-			echo $result
+	fi
+	echo $result
 }
-while ((0==0))
-do
+#LOGIC FOR COMPUTER TURN
+function computerTurn()
+{
+	computerPlay=$((RANDOM%8))
+	if [[ ${board[$computerPlay]} != "X" ]] && [[ ${board[$computerPlay]} != "O" ]]
+	then
+		echo "Computer turn"
+		board[$computerPlay]="$computer"
+		displayBoard
+	else
+		computerTurn $computer
+	fi
+}
+	#LOGIC FOR TO PLAY UPTO WIN OR DRAW
+	assiningLetter
+	temp=0
+	if [[ "$tossComputer" = "computer" ]]
+	then
+		temp=1
+	fi
+	while (( 0==0 ))
+	do
+		if(( $temp%2==0 ))
+		then
+			validCellNumber
+			result="$(gameOver $player)"
+			if [[ $result == "Win" ||  $result == "Draw" ]]
+			then
+				echo " Player $result"
+				break
+			fi
+		else
+			computerTurn
+			result="$(gameOver $computer)"
+			if [[ $result == "Win"  ||  $result == "Draw" ]]
+			then
+				echo "Computer $result\n"
+				break
+			fi
+		fi
+			temp=$(($temp+1))
+	done
 displayBoard
-validCellNumber
-result="$(gameOver)"
-#echo "$result"
-done
-
-
-	
-
-
-
-
-
-
