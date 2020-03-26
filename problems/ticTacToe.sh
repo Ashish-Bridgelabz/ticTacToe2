@@ -283,8 +283,7 @@ function fillCorner()
 				return
 			else
 				fillCorner $player
-			fi
-			;;
+			fi;;
 		1)
 			if [[ ${board[2]} == $EMPTY ]]
 			then
@@ -293,8 +292,7 @@ function fillCorner()
 			 return
 			else
 				fillCorner $player
-			fi
-			;;
+			fi;;
 		2)
 			if [[ ${board[6]} == $EMPTY ]]
 			then
@@ -303,8 +301,7 @@ function fillCorner()
 				return
 			else
 				fillCorner $player
-			fi
-			;;
+			fi;;
 		3)
 			if [[ ${board[8]} == $EMPTY ]]
 			then
@@ -313,7 +310,7 @@ function fillCorner()
 				return
 			else
 				fillCorner $player
-			fi
+			fi;;
 	esac
 }
 
