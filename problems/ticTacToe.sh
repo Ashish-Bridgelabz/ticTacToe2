@@ -34,11 +34,12 @@ function playerTurn()
 	read userInput
 		if [[ $userInput -lt 9 ]] && [[ ${board[$userInput]} != "X" && ${board[$userInput]} != "O" ]]
 		then
+			#USING CLEAR TO CLEAN PREVIOUS PLAYED
 			echo "Player turn"
 			board[$userInput]="$player"
 		else
 			echo "Enter valid input"
-			playerTurn 
+			playerTurn $player
 		fi
 	displayBoard
 }
@@ -49,15 +50,16 @@ function checkToss()
 	toss=$((RANDOM%2+1))
 	case $toss in
 		1)
-			echo " Player play first"
-			echo "Player assinged: $player\nComputer assinged: $computer"
+			echo "Player play first"
+			echo "Player assinged: $player\nComputer assinged: $computer\n"
 			displayBoard;;
 		2)
-			echo "Computer play first"
-			echo "Computer assinged: $computer\nPlayer assinged: $player"
+			printf "!!! Computer play first !!!\n\n"
+			printf "Computer assinged: $computer\nPlayer assinged: $player\n"
 			tossComputer="computer";;
 	esac
 }
+
 #LOGIC FOR WIN  DRAW AND NEXT CHANCE
 function gameOver()
 {
@@ -103,6 +105,7 @@ function gameOver()
 	fi
 	echo $result
 }
+
 #COMPUTER FILL AUTOMATIC TO WIN
 function computerFillAutomatic()
 {
@@ -186,6 +189,7 @@ function computerFillAutomatic()
 		return
 	fi
 }
+
 #LOGIC FOR IF OPPONENT CAN WIN THEN BLOCK IT
 function blockPlayerWin()
 {
@@ -283,7 +287,8 @@ function fillCorner()
 				return
 			else
 				fillCorner $player
-			fi;;
+			fi
+			;;
 		1)
 			if [[ ${board[2]} == $EMPTY ]]
 			then
@@ -292,7 +297,8 @@ function fillCorner()
 			 return
 			else
 				fillCorner $player
-			fi;;
+			fi
+			;;
 		2)
 			if [[ ${board[6]} == $EMPTY ]]
 			then
@@ -301,7 +307,8 @@ function fillCorner()
 				return
 			else
 				fillCorner $player
-			fi;;
+			fi
+			;;
 		3)
 			if [[ ${board[8]} == $EMPTY ]]
 			then
@@ -310,10 +317,20 @@ function fillCorner()
 				return
 			else
 				fillCorner $player
-			fi;;
+			fi
 	esac
 }
-
+#LOGIC TO FILL IN CENTER
+function fillCenter()
+{
+	comPlay=0
+	if [[ $board[4] == $EMPTY ]]
+	then
+		board[4]=$computer
+		comPlay=1
+		return
+	fi
+}
 #LOGIC FOR COMPUTER TURN
 function computerTurn()
 {
@@ -326,6 +343,10 @@ function computerTurn()
 	if(($compPlay==0))
 	then
 		fillCorner
+	fi
+	if(($compPlay==0))
+	then
+		fillCenter
 	fi
 	if(($compPlay==0))
 	then
