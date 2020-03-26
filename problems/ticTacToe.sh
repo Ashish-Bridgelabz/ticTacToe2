@@ -1,8 +1,7 @@
-
 #!/bin/bash -x
 #DISPLAYE THE WELCOME STATEMENT
 echo "Welcome to the Tic Tac Toe Game"
-null=" "
+EMPTY=" "
 declare -a board
 board=(" " " " " " " " " " " " " " " " " ")
 function displayBoard()
@@ -17,50 +16,45 @@ function displayBoard()
 function assiningLetter()
 {
 	#GENERATING RANDOM VALUE TO ASSIGN PLAYER O OR X
-	random=$((RANDOM%2))
+	random=$((RANDOM%2+1))
 	case $random in
-		0)
+		1)
 			player="X"
 			computer="O";;
-		1)
+		2)
 			player="O"
 			computer="X";;
 	esac
 	checkToss
 }
-#LOGIC FOR CHOOSE VALID CELL
-function validCellNumber()
+#CHOOSE VALID CELL
+function playerTurn()
 {
 	echo "Enter index 0 to 8 to choose position in board"
-	read data
-	if(($data>=0 && $data<=8))
-	then
-			if [[ "${board[data]}"!="X" && "${board[data]}"!="O" ]]
-			then
-			#USING CLEAR TO CLEAN PREVIOUS PLAYED
-			clear
-			echo "Player turn\n"
-			board[$data]="$player"
-			displayBoard
-			else
+	read userInput
+		if [[ $userInput -lt 9 ]] && [[ ${board[$userInput]} != "X" && ${board[$userInput]} != "O" ]]
+		then
+			echo "Player turn"
+			board[$userInput]="$player"
+		else
 			echo "Enter valid input"
-			validCellNumber $player
-			fi
-	fi
+			playerTurn 
+		fi
+	displayBoard
 }
 #LOGIC FOR TO ASSIGN FIRST CHANCE
 function checkToss()
 {
-	#GENERATING RANDOM VALUE 0 FOR PALYER 1 FOR COMPUTER
-	toss=$((RANDOM%2))
+	#GENERATING RANDOM VALUE 1 FOR PALYER 2 FOR COMPUTER
+	toss=$((RANDOM%2+1))
 	case $toss in
-		0)
-			echo "Player play first"
-			echo "Player assinged: $player and Computer assinged: $computer"
-			displayBoard;;
 		1)
+			echo " Player play first"
+			echo "Player assinged: $player\nComputer assinged: $computer"
+			displayBoard;;
+		2)
 			echo "Computer play first"
-			echo "Computer assinged: $computer and Player assinged: $player"
+			echo "Computer assinged: $computer\nPlayer assinged: $player"
 			tossComputer="computer";;
 	esac
 }
@@ -102,7 +96,7 @@ function gameOver()
 		done
 	if(( $temp==1 ))
 	then
-		result="Chance"
+		result="Change"
 	else
 		result="Draw"
 	fi
@@ -112,7 +106,8 @@ function gameOver()
 #COMPUTER FILL AUTOMATIC TO WIN
 function computerFillAutomatic()
 {
-	local rowIndex=0
+	compPlay=0
+	local	rowIndex=0
 	local columnIndex=0
 	#CHECKING FOR ROWS
 	while(($rowIndex<8))
@@ -133,7 +128,7 @@ function computerFillAutomatic()
 			compPlay=1
 			return
 		fi
-		rowIndex=$(($rowIndex+1))
+		rowIndex=$(($rowIndex+3))
 	done
 	#CHECKING FOR COLUMNS
 	while(($columnIndex<8))
@@ -167,7 +162,7 @@ function computerFillAutomatic()
 		board[4]=$computer
 		compPlay=1
 		return
-		elif [[ ${board[8]} == $computer && ${board[4]} == $computer && ${board[0]} == $EMPTY ]]
+	elif [[ ${board[8]} == $computer && ${board[4]} == $computer && ${board[0]} == $EMPTY ]]
 	then
 		board[0]=$computer
 		compPlay=1
@@ -191,21 +186,167 @@ function computerFillAutomatic()
 		return
 	fi
 }
+#LOGIC FOR IF OPPONENT CAN WIN THEN BLOCK IT
+function blockPlayerWin()
+{
+	local rowIndex=0
+	local columnIndex=0
+	compPlay=0
+	#CHECKING FOR ROWS
+	while(($rowIndex<8))
+	do
+		if [[ ${board[$rowIndex]} == $player && ${board[$(($rowIndex+1))]} == $player && ${board[$(($rowIndex+2))]} == $EMPTY ]]
+		then
+			board[$(($rowIndex+2))]=$computer
+			compPlay=1
+			return
+		elif [[ ${board[$rowIndex]} == $player && ${board[$(($rowIndex+2))]} == $player && ${board[$(($rowIndex+1))]} == $EMPTY ]]
+		then
+			board[$(($rowIndex+1))]=$computer
+			compPlay=1
+			return
+		elif [[ ${board[$(($rowIndex+2))]} == $player && ${board[$(($rowIndex+1))]} == $player && ${board[$rowIndex]} == $EMPTY ]]
+		then
+			board[$rowIndex]=$computer
+			compPlay=1
+			return
+		fi
+			rowIndex=$(($rowIndex+3))
+	done
+	#CHECKING FOR COLUMNS
+	while(($columnIndex<8))
+	do
+		if [[ ${board[$columnIndex]} == $player && ${board[$(($columnIndex+3))]} == $player && ${board[$(($columnIndex+6))]} == $EMPTY ]]
+		then
+			board[$(($columnIndex+6))]=$computer
+			compPlay=1
+			return
+		elif [[ ${board[$columnIndex]} == $player && ${board[$(($columnIndex+6))]} == $player && ${board[$(($columnIndex+3))]} == $EMPTY ]]
+		then
+			board[$(($columnIndex+3))]=$computer
+			compPlay=1
+			return
+		elif [[ ${board[$(($columnIndex+3))]} == $player && ${display[$(($columnIndex+6))]} == $player && ${board[$columnIndex]} == $EMPTY ]]
+		then
+			board[$columnIndex]=$computer
+			compPlay=1
+			return
+		fi
+			columnIndex=$(($columnIndex+1))
+	done
+	#CHECKING FOR \ DIAGONAL
+	if [[ ${board[0]} == $player && ${board[4]} == $player && ${board[8]} == $EMPTY ]]
+	then
+		board[8]=$computer
+		compPlay=1
+		return
+	elif [[ ${board[0]} == $player && ${board[8]} == $player && ${board[4]} == $EMPTY ]]
+	then
+		board[4]=$computer
+		compPlay=1
+		return
+	elif [[ ${board[8]} == $player && ${board[4]} == $player && ${board[0]} == $EMPTY ]]
+	then
+		board[0]=$computer
+		compPlay=1
+		return
+	fi
+	#CHECKING FOR / DIAGONAL
+	if [[ ${board[2]} == $player && ${board[4]} == $player && ${board[6]} == $EMPTY ]]
+	then
+		board[6]=$computer
+		compPlay=1
+		return
+	elif [[ ${board[2]} == $player && ${board[6]} == $player && ${board[4]} == $EMPTY ]]
+	then
+		board[4]=$computer
+		compPlay=1
+		return
+	elif [[ ${board[6]} == $player && ${board[4]} == $player && ${board[2]} == $EMPTY ]]
+	then
+		board[2]=$computer
+		compPlay=1
+		return
+	fi
+}
+
+#LOGIC TO FILL IN CORNER
+function fillCorner()
+{
+	randomCorner=$((RANDOM%4))
+	case $randomCorner in
+		0)
+			if [[ ${board[0]} == $EMPTY ]]
+			then
+				display[0]=$computer
+				compPlay=1
+				return
+			else
+				fillCorner $player
+			fi
+			;;
+		1)
+			if [[ ${board[2]} == $EMPTY ]]
+			then
+				board[2]=$computer
+				compPlay=1
+			 return
+			else
+				fillCorner $player
+			fi
+			;;
+		2)
+			if [[ ${board[6]} == $EMPTY ]]
+			then
+				board[6]=$computer
+				compPlay=1
+				return
+			else
+				fillCorner $player
+			fi
+			;;
+		3)
+			if [[ ${board[8]} == $EMPTY ]]
+			then
+				board[2]=$computer
+				compPlay=1
+				return
+			else
+				fillCorner $player
+			fi
+	esac
+}
+
 #LOGIC FOR COMPUTER TURN
 function computerTurn()
 {
-	computerPlay=$((RANDOM%8))
-	if [[ ${board[$computerPlay]} != "X" ]] && [[ ${board[$computerPlay]} != "O" ]]
+	compPlay=0
+	computerFillAutomatic
+	if(($compPlay==0))
 	then
-		echo "Computer turn"
-		board[$computerPlay]="$computer"
-		displayBoard
-	else
-		computerTurn $computer
+		blockPlayerWin
 	fi
+	if(($compPlay==0))
+	then
+		fillCorner
+	fi
+	if(($compPlay==0))
+	then
+		computerPlay=$((RANDOM%8))
+		if [[ ${board[$computerPlay]} != "X" ]] && [[ ${board[$computerPlay]} != "O" ]]
+		then
+			echo "Computer turn"
+			board[$computerPlay]="$computer"
+	else
+			computerTurn $computer
+		fi
+	fi
+displayBoard
 }
-	#LOGIC FOR TO PLAY UPTO WIN OR DRAW
-	assiningLetter
+
+#LOGIC FOR TO PLAY UPTO WIN OR DRAW
+function winOrDraw()
+{
 	temp=0
 	if [[ "$tossComputer" = "computer" ]]
 	then
@@ -213,24 +354,27 @@ function computerTurn()
 	fi
 	while (( 0==0 ))
 	do
-		if(( $temp%2==0 ))
+		if(( $temp%2!=0 ))
 		then
-			validCellNumber
+			computerTurn
 			result="$(gameOver $player)"
 			if [[ $result == "Win" ||  $result == "Draw" ]]
 			then
-				echo " Player $result"
+				echo "Computer $result"
 				break
 			fi
-		else
-			computerTurn
-			result="$(gameOver $computer)"
+			else
+				playerTurn
+				result="$(gameOver $computer)"
 			if [[ $result == "Win"  ||  $result == "Draw" ]]
 			then
-				echo "Computer $result\n"
+				echo "Player $result"
 				break
 			fi
 		fi
-			temp=$(($temp+1))
+		temp=$(($temp+1))
 	done
+}
 displayBoard
+assiningLetter
+winOrDraw
